@@ -1,0 +1,18 @@
+{
+  "name": "CAD_Kel13",
+  "version": "1",
+  "description": "Aplikasi CAD grafkom",
+  "main": "index.js",
+  "repository": "https://github.com/leomatt547/CAD_Kel13",
+  "author": "Leo Matt <leo.matt.547@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "snowpack dev",
+    "build": "snowpack build"
+  },
+  "devDependencies": {
+    "snowpack": "^3.8.8"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,53 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js init
+
+PATH: 
+  C:\Program Files\Common Files\Oracle\Java\javapath;C:\Python39\Scripts\;C:\Python39\;C:\Users\JL Gading\AppData\Roaming\Python\Python39\Scripts;C:\Program Files\AdoptOpenJDK\jdk-15.0.2.7-hotspot\bin;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Windows\system32;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\ProgramData\chocolatey\bin;C:\MinGW\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\extras\CUPTI\libx64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\cuda\bin;C:\Program Files\protoc\bin\protoc;C:\TDM-GCC-64\bin;C:\Program Files (x86)\Java\jre1.8.0_261\bin;C:\Program Files\Java\jdk1.8.0_261\bin;C:\Program Files\Java\jre1.8.0_261\bin;C:\Program Files\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;C:\Program Files\nodejs\;C:\Program Files\apache-maven-3.6.3\bin;C:\Program Files\Java\jdk-11.0.12\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Apache24\bin;C:\xampp\php;C:\ProgramData\ComposerSetup\bin;C:\Program Files\Cloud Foundry;C:\Users\JLGading\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\dotnet\;C:\ffmpeg\bin;C:\Program Files\PostgreSQL\14\bin;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\Apache Software Foundation\Tomcat 10.0\bin;C:\Program Files\Apache Software Foundation\Tomcat 10.0\\bin;C:\Program Files\MySQL\MySQL Server 8.0\bin;D:\Hadoop\hadoop-3.2.2\bin;C:\Program Files (x86)\dotnet\;C:\Program Files\Git\cmd;C:\Program Files\OpenVPN\bin;C:\Program Files\Go\bin;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Python39\Scripts\;C:\Python39\;C:\Users\JL Gading\AppData\Roaming\Python\Python39\Scripts;C:\Program Files\AdoptOpenJDK\jdk-15.0.2.7-hotspot\bin;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Windows\system32;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\ProgramData\chocolatey\bin;C:\MinGW\bin;C:\Program Files\OpenVPN\bin;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\extras\CUPTI\libx64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.0\cuda\bin;C:\Program Files\protoc\bin\protoc;C:\Users\JLGading\.dotnet\tools;C:\Users\JLGading\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\JLGading\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin;C:\Users\JLGading\AppData\Local\Microsoft\WindowsApps;C:\xampp\php;C:\Users\JLGading\AppData\Local\Yarn\bin;D:\odoo;D:\Hadoop\hadoop-3.2.2\bin;C:\Users\JLGading\go\bin
+
+Yarn version: 
+  1.22.15
+
+Node version: 
+  14.15.4
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:137145:13)
+      at Interface.emit (events.js:315:20)
+      at Interface._ttyWrite (readline.js:875:16)
+      at ReadStream.onkeypress (readline.js:213:10)
+      at ReadStream.emit (events.js:315:20)
+      at emitKeys (internal/readline/utils.js:345:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (readline.js:1144:36)
+      at ReadStream.emit (events.js:315:20)
+      at addChunk (internal/streams/readable.js:309:12)
+
+npm manifest: 
+  {
+    "name": "CAD_Kel13",
+    "version": "1",
+    "description": "Aplikasi CAS grafkom",
+    "main": "index.js",
+    "repository": "https://github.com/leomatt547/CAD_Kel13",
+    "author": "Leo Matt <leo.matt.547@gmail.com>",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+      "start": "snowpack dev",
+      "build": "snowpack build"
+    },
+    "devDependencies": {
+      "snowpack": "^3.0.11"
+    },
+    "dependencies": {}
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
