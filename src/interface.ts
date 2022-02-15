@@ -1,6 +1,9 @@
 export interface ProgramInfo {
   shader_program?: WebGLProgram;
-  vertex_program?: WebGLProgram;
+  select_program?: WebGLProgram;
+  vertex_point_program?: WebGLProgram;
+  vertex_select_program?: WebGLProgram;
+  buffers?: Buffers;
 }
 
 export interface Buffers {
@@ -22,14 +25,12 @@ export enum ObjectType {
 export interface GLObjectData {
   position: [number, number];
   anchor_point: [number, number];
-  rotation: number;
   scale: [number, number];
   color: [number, number, number, number];
   indices_length: number;
   vertex_array: Array<number>;
   type: number;
   object_type: number;
-  name: String;
   id: number;
   projection_matrix: Array<number>;
 }
@@ -43,6 +44,5 @@ export enum AppState {
   Draw,
   Select,
   Move,
-  Rotate,
   Scale,
 }

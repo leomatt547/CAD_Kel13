@@ -38,14 +38,12 @@ class GLObject {
     const gl_object: GLObjectData = {
       position: this.position,
       anchor_point: this.anchor_point,
-      rotation: this.rotation,
       scale: this.scale,
       color: this.color,
       indices_length: this.indices_length,
       vertex_array: this.vertex_array,
       type: this.type,
       object_type: this.object_type,
-      name: this.name,
       id: this.id,
       projection_matrix: this.projection_matrix,
     };
@@ -55,7 +53,6 @@ class GLObject {
   setData(gl_object: GLObjectData) {
     this.position = gl_object.position;
     this.anchor_point = gl_object.anchor_point;
-    this.rotation = gl_object.rotation;
     this.scale = gl_object.scale;
     this.color = gl_object.color;
     this.vertex_array = gl_object.vertex_array;
@@ -65,19 +62,62 @@ class GLObject {
     this.id = gl_object.id;
     this.projection_matrix = gl_object.projection_matrix;
   }
-
+  
+  //assign
+  assignId(id: number) { 
+    this.id = id 
+  }
+  
   // methods
+  assignVertexArray(vertex_array: Array<number>) {
+    this.vertex_array = vertex_array
+    this.setAnchorPoint()
+    const [centerX, centerY] = this.anchor_point
+    const transformedVertexArray = [...this.vertex_array]
+    for (let i = 0; i < transformedVertexArray.length; i += 2) {
+      transformedVertexArray[i] -= centerX
+      transformedVertexArray[i+1] -= centerY
+    }
+    this.vertex_array = transformedVertexArray
+    this.position = this.anchor_point
+    this.scale = this.scale || [1,1]
+    this.projection_matrix = this.calcProjectionMatrix()
+  }
+
+  setAnchorPoint() {
+    if (this.vertex_array && this.vertex_array.length % 2 === 0) {
+      let sigmaX = 0
+      let sigmaY = 0
+      for (let i = 0; i < this.vertex_array.length; i += 2) {
+        sigmaX += this.vertex_array[i]
+        sigmaY += this.vertex_array[i+1]
+      }
+      this.anchor_point = [sigmaX / (this.vertex_array.length/2), sigmaY / (this.vertex_array.length/2)]
+    }
+  }
+
   setVertexArray(vertex_array: number[]) {
     this.vertex_array = vertex_array;
   }
 
-  setPosition(_x: number, _y: number) {
-    this.position = [_x, _y];
-    this.projection_matrix = this.calcProjectionMatrix();
+  moveVertex(index: number, x: number, y: number) {
+    this.vertex_array[index*2] = x - this.position[0]
+    this.vertex_array[index*2+1] = y - this.position[1]
+    this.setAnchorPoint()
+    const [centerX, centerY] = this.anchor_point
+    const transformedVertexArray = [...this.vertex_array]
+    for (let i = 0; i < transformedVertexArray.length; i += 2) {
+        transformedVertexArray[i] -= centerX
+        transformedVertexArray[i+1] -= centerY
+    }
+    this.vertex_array = transformedVertexArray
+    this.position[0] += this.anchor_point[0]
+    this.position[1] += this.anchor_point[1]
+    this.projection_matrix = this.calcProjectionMatrix()
   }
 
-  setRotation(_rotation: number) {
-    this.rotation = _rotation;
+  setPosition(_x: number, _y: number) {
+    this.position = [_x, _y];
     this.projection_matrix = this.calcProjectionMatrix();
   }
 
@@ -86,28 +126,34 @@ class GLObject {
     this.projection_matrix = this.calcProjectionMatrix();
   }
 
+  setColor(color: [number, number, number, number]) {
+    this.color = color 
+  }
+
+  setSelected(is_selected: boolean) {
+    this.is_selected = is_selected
+  }
+  
+  deselect() {
+    this.is_selected = false
+  }
+
   calcProjectionMatrix() {
     if (
       this.position === undefined ||
-      this.rotation === undefined ||
       this.scale === undefined
     )
       return null;
     const [u, v] = this.position;
     const matrix_translasi = [1, 0, 0, 0, 1, 0, u, v, 1];
-    const degrees = this.rotation;
-    const rad = (degrees * Math.PI) / 180;
-    const sin = Math.sin(rad);
-    const cos = Math.cos(rad);
-    const matrix_rotasi = [cos, -sin, 0, sin, cos, 0, 0, 0, 1];
     const [k1, k2] = this.scale;
     const matrix_scale = [k1, 0, 0, 0, k2, 0, 0, 0, 1];
     const projectionMat = multiplyMatrix(
-      multiplyMatrix(matrix_rotasi, matrix_scale),
-      matrix_translasi
+      matrix_scale,matrix_translasi
     );
     return projectionMat;
   }
+  
   bind() {
     const gl = this.gl;
     const vbo = gl.createBuffer();
@@ -131,6 +177,119 @@ class GLObject {
     gl.enableVertexAttribArray(vertexPos);
     gl.drawArrays(gl.TRIANGLES, 0, this.vertex_array.length / 2);
   }
+  drawSelect(selectProgram: WebGLProgram) {
+    this.bind()
+    const gl = this.gl
+    const id = this.id
+    gl.useProgram(selectProgram)
+    const vertexPos = gl.getAttribLocation(selectProgram, 'a_Pos')
+    const uniformCol = gl.getUniformLocation(selectProgram, 'u_id')
+    const uniformPos = gl.getUniformLocation(selectProgram, 'u_pos')
+    gl.uniformMatrix3fv(uniformPos, false, this.projection_matrix)
+    gl.vertexAttribPointer(
+        vertexPos,
+        2, // it's 2 dimensional
+        gl.FLOAT,
+        false,
+        0,
+        0
+    )
+    gl.enableVertexAttribArray(vertexPos)
+    const uniformId = [
+        ((id >> 0) & 0xFF) / 0xFF,
+        ((id >> 8) & 0xFF) / 0xFF,
+        ((id >> 16) & 0xFF) / 0xFF,
+        ((id >> 24) & 0xFF) / 0xFF,
+    ]
+    gl.uniform4fv(uniformCol, uniformId)
+    gl.drawElements(this.type, this.indices_length, gl.UNSIGNED_SHORT, 0)
+  }
+
+  drawPoint(vertPointProgram: WebGLProgram) {
+    this.bind()
+    const program = vertPointProgram
+    const gl = this.gl
+    gl.useProgram(program)
+    const vertexPos = gl.getAttribLocation(program, 'a_Pos')
+    const uniformCol = gl.getUniformLocation(program, 'u_fragColor')
+    const uniformPos = gl.getUniformLocation(program, 'u_pos')
+    const resolutionPos = gl.getUniformLocation(program, 'u_resolution')
+    gl.uniformMatrix3fv(uniformPos, false, this.projection_matrix)
+    gl.vertexAttribPointer(
+        vertexPos,
+        2, // it's 2 dimensional
+        gl.FLOAT,
+        false,
+        0,
+        0
+    )
+    gl.uniform2f(resolutionPos, gl.canvas.width, gl.canvas.height)
+    gl.enableVertexAttribArray(vertexPos)
+    if (this.color) {
+        gl.uniform4fv(uniformCol, this.color)
+    }
+    gl.uniform4fv(uniformCol, [0.0, 0.0, 1.0, 1.0])
+    if (this.indices_length > 3) {
+        gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 2)
+        gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 4)
+        gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 0)
+        for (let i = 3; i < this.indices_length; i+=3) {
+            gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, (i+1)*2)
+        }
+    } else {
+        gl.drawElements(gl.POINTS, 2, gl.UNSIGNED_SHORT, 0)
+    }
+  }
+
+  drawPointSelect(selectProgram: WebGLProgram) {
+    this.bind()
+    const gl = this.gl
+    gl.useProgram(selectProgram)
+    const vertexPos = gl.getAttribLocation(selectProgram, 'a_Pos')
+    const uniformCol = gl.getUniformLocation(selectProgram, 'u_id')
+    const uniformPos = gl.getUniformLocation(selectProgram, 'u_pos')
+    const resolutionPos = gl.getUniformLocation(selectProgram, 'u_resolution')
+    gl.uniformMatrix3fv(uniformPos, false, this.projection_matrix)
+    gl.vertexAttribPointer(
+        vertexPos,
+        2, // it's 2 dimensional
+        gl.FLOAT,
+        false,
+        0,
+        0
+    )
+    gl.enableVertexAttribArray(vertexPos)
+    gl.uniform2f(resolutionPos, gl.canvas.width, gl.canvas.height)
+    if (this.indices_length > 3) {
+        gl.uniform4fv(uniformCol, setElementId(2))
+        gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 0)
+        gl.uniform4fv(uniformCol, setElementId(3))
+        gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 2)
+        gl.uniform4fv(uniformCol, setElementId(1))
+        gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 4)
+        let lastVertId = 4
+        for (let i = 3; i < this.indices_length; i+=3) {
+            gl.uniform4fv(uniformCol, setElementId(lastVertId))
+            gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, (i+1)*2)
+            lastVertId++
+        }
+    } else {
+        gl.uniform4fv(uniformCol, setElementId(1))
+        gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 0)
+        gl.uniform4fv(uniformCol, setElementId(2))
+        gl.drawElements(gl.POINTS, 1, gl.UNSIGNED_SHORT, 2)
+    }        
+  }
+}
+
+function setElementId(id: number) {
+  const uniformId = [
+      ((id >> 0) & 0xFF) / 0xFF,
+      ((id >> 8) & 0xFF) / 0xFF,
+      ((id >> 16) & 0xFF) / 0xFF,
+      0x69,
+  ]
+  return uniformId
 }
 
 export default GLObject;
