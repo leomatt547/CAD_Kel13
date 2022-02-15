@@ -14,27 +14,29 @@ class GLObjectList {
         this.gl_object_list.push(obj)
     }
     
-    render(programInfo: ProgramInfo) {
+    render(program_info: ProgramInfo) {
         for (const obj of this.gl_object_list) {
             obj.draw()
-            if (obj.is_selected) obj.drawPoint(programInfo.vertex_point_program)
-        }
-    }
-
-    renderTex(programInfo: ProgramInfo) {
-        for (const obj of this.gl_object_list) {
             if (obj.is_selected) {
-                obj.drawPointSelect(programInfo.vertex_select_program)
-                obj.drawSelect(programInfo.select_program)
-            } else {
-                obj.drawSelect(programInfo.select_program)
+                obj.drawPoint(program_info.vertex_point_program)
             }
         }
     }
 
-    renderPoint(vertPointProgram: WebGLProgram) {
+    renderTexture(program_info: ProgramInfo) {
         for (const obj of this.gl_object_list) {
-            obj.drawPoint(vertPointProgram)
+            if (obj.is_selected) {
+                obj.drawPointSelect(program_info.vertex_select_program)
+                obj.drawSelect(program_info.select_program)
+            } else {
+                obj.drawSelect(program_info.select_program)
+            }
+        }
+    }
+
+    renderPoint(vertex_point_program: WebGLProgram) {
+        for (const obj of this.gl_object_list) {
+            obj.drawPoint(vertex_point_program)
         }
     }
 

@@ -2,31 +2,31 @@ import {loadShader} from '../loader'
 import {ProgramInfo} from '../interface'
 
 export async function initShader(gl: WebGL2RenderingContext) {
-    const vs = await loadShader(gl, gl.VERTEX_SHADER, 'vs.vertexshader')
-    const fs = await loadShader(gl, gl.FRAGMENT_SHADER, 'fs.fragmentshader')
-    const shaderProgram = gl.createProgram()
-    gl.attachShader(shaderProgram, vs)
-    gl.attachShader(shaderProgram, fs)
-    gl.linkProgram(shaderProgram)
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        alert('Maaf, ada masalah saat inisiasi program shader: ' + gl.getProgramInfoLog(shaderProgram))
+    const vs = await loadShader(gl, gl.VERTEX_SHADER, 'x-shader/x-vertex')
+    const fs = await loadShader(gl, gl.FRAGMENT_SHADER, 'x-shader/x-fragment')
+    const shader_program = gl.createProgram()
+    gl.attachShader(shader_program, vs)
+    gl.attachShader(shader_program, fs)
+    gl.linkProgram(shader_program)
+    if (!gl.getProgramParameter(shader_program, gl.LINK_STATUS)) {
+        alert('Maaf, ada masalah saat inisiasi program shader: ' + gl.getProgramInfoLog(shader_program))
         return null
     }
-    return shaderProgram
+    return shader_program
 }
 
 export async function initShaderFiles(gl: WebGL2RenderingContext, vertex: string, fragment: string) {
     const vs = await loadShader(gl, gl.VERTEX_SHADER, vertex)
     const fs = await loadShader(gl, gl.FRAGMENT_SHADER, fragment)
-    const shaderProgram = gl.createProgram()
-    gl.attachShader(shaderProgram, vs)
-    gl.attachShader(shaderProgram, fs)
-    gl.linkProgram(shaderProgram)
-    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-        alert('Maaf, ada masalah saat inisiasi program shader: ' + gl.getProgramInfoLog(shaderProgram))
+    const shader_program = gl.createProgram()
+    gl.attachShader(shader_program, vs)
+    gl.attachShader(shader_program, fs)
+    gl.linkProgram(shader_program)
+    if (!gl.getProgramParameter(shader_program, gl.LINK_STATUS)) {
+        alert('Maaf, ada masalah saat inisiasi program shader: ' + gl.getProgramInfoLog(shader_program))
         return null
     }
-    return shaderProgram
+    return shader_program
 }
 
 export function init(gl: WebGL2RenderingContext, program_info: ProgramInfo, vertex_array_buffer: Array<number>) {

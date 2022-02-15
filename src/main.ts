@@ -3,7 +3,6 @@ import { init, initShader, initShaderFiles } from './utils/init'
 import {download, recalcPosBuf} from './utils/tools'
 
 import GLObject from './objects/GLObject'
-import ObjectList from './objects/GLObjectList'
 import GLObjectList from './objects/GLObjectList';
 
 let isMouseDown = false;
@@ -20,7 +19,7 @@ let lastSelectedObjId = -1
 let lastSelectedVertId = -1
 let totalObj = 0
 
-let programInfo: ProgramInfo = {};
+let program_info: ProgramInfo = {};
 let glReference: WebGL2RenderingContext;
 
 let loadFileInput = null;
@@ -66,10 +65,10 @@ function setupUI(gl_object_list: GLObjectList) {
             fileReader.onload = (evt) => {
                 const content = evt.target.result as string
                 const parsed = JSON.parse(content) as AppData
-                gl_object_list.load(parsed.gl_object_data, programInfo.shader_program, glReference)
+                gl_object_list.load(parsed.gl_object_data, program_info.shader_program, glReference)
                 document.body.removeChild(loadFileInput)
                 loadFileInput = null
-                drawScene(glReference, programInfo)
+                drawScene(glReference, program_info)
             }
             fileReader.readAsText(file)
         }
@@ -144,7 +143,7 @@ function draw_polygon() {
     sisa_vertex = 999
 }
 
-function dragEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, programInfo: ProgramInfo) {
+function dragEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, program_info: ProgramInfo) {
     if (appState === AppState.Move && isMouseDown) {
         const position = [
             event.pageX - event.target.offsetLeft,
@@ -160,13 +159,13 @@ function dragEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, 
     }
 }
 
-function drawScene(gl: WebGL2RenderingContext, programInfo) {
-    const shaderProgram = programInfo.shaderProgram
-    gl.useProgram(shaderProgram)
-    gl.bindBuffer(gl.ARRAY_BUFFER, programInfo.buffers.position_buffer)
-    const vertexPos = gl.getAttribLocation(shaderProgram, 'attrib_vertexPos')
-    const resolutionPos = gl.getUniformLocation(shaderProgram, 'u_resolution')
-    const uniformPos = gl.getUniformLocation(shaderProgram, 'u_pos')
+function drawScene(gl: WebGL2RenderingContext, program_info) {
+    const shader_program = program_info.shader_program
+    gl.useProgram(shader_program)
+    gl.bindBuffer(gl.ARRAY_BUFFER, program_info.buffers.position_buffer)
+    const vertexPos = gl.getAttribLocation(shader_program, 'attrib_vertexPos')
+    const resolutionPos = gl.getUniformLocation(shader_program, 'u_resolution')
+    const uniformPos = gl.getUniformLocation(shader_program, 'u_pos')
     const identityMatrix = [
         1, 0, 0,
         0, 1, 0,
@@ -176,7 +175,7 @@ function drawScene(gl: WebGL2RenderingContext, programInfo) {
     gl.uniformMatrix3fv(uniformPos, false, identityMatrix)
     gl.vertexAttribPointer(vertexPos, 2, gl.FLOAT, false, 0, 0)
     gl.enableVertexAttribArray(vertexPos)    
-    const uniformcCol = gl.getUniformLocation(shaderProgram, 'u_fragColor')
+    const uniformcCol = gl.getUniformLocation(shader_program, 'u_fragColor')
     gl.uniform4f(uniformcCol, 0.5, 0.5, 0, 1)
     if (drawingContext === ObjectType.Poly) {
         //Menggambar garis setiap melewati vertex yang terbentuk
@@ -186,15 +185,15 @@ function drawScene(gl: WebGL2RenderingContext, programInfo) {
     }   
 }
 
-function drawTex(gl: WebGL2RenderingContext, programInfo: ProgramInfo, objList: GLObjectList) {
-    const frameBuf = programInfo.buffers
-    gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuf)
+function drawTexture(gl: WebGL2RenderingContext, program_info: ProgramInfo, objList: GLObjectList) {
+    const {frame_buffer} = program_info.buffers
+    gl.bindFramebuffer(gl.FRAMEBUFFER, frame_buffer)
     gl.enable(gl.DEPTH_TEST)
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-    gl.useProgram(programInfo.select_program)
-    const resolutionPos = gl.getUniformLocation(programInfo.select_program, 'u_resolution')
+    gl.useProgram(program_info.select_program)
+    const resolutionPos = gl.getUniformLocation(program_info.select_program, 'u_resolution')
     gl.uniform2f(resolutionPos, gl.canvas.width, gl.canvas.height)
-    objList.renderTex(programInfo)
+    objList.renderTexture(program_info)
 }
 
 async function main() {
@@ -208,20 +207,20 @@ async function main() {
         return
     }
     
-    
-    programInfo.shader_program = await initShaderFiles(gl, 'draw_vert.glsl', 'draw_frag.glsl')
-    programInfo.select_program = await initShaderFiles(gl, 'select_vert.glsl', 'select_frag.glsl')
-    programInfo.vertex_point_program = await initShaderFiles(gl, 'point_vert.glsl', 'point_frag.glsl')
-    programInfo.vertex_select_program = await initShaderFiles(gl, 'point_vert.glsl', 'selectPoint_frag.glsl')
-    let objectList: GLObjectList = new GLObjectList(programInfo.select_program)
+    program_info.shader_program = await initShaderFiles(gl, 'draw_vertex.glsl', 'draw_fragment.glsl')
+    program_info.select_program = await initShaderFiles(gl, 'select_vertex.glsl', 'select_fragment.glsl')
+    program_info.vertex_point_program = await initShaderFiles(gl, 'point_vertex.glsl', 'point_fragment.glsl')
+    program_info.vertex_select_program = await initShaderFiles(gl, 'point_vertex.glsl', 'selectPoint_fragment.glsl')
+    let objectList: GLObjectList = new GLObjectList(program_info.select_program)
     
     setupUI(objectList)
 
     canvas.addEventListener('mousemove', (event) => {
-        dragEvent(gl, event, objectList, programInfo)
+        printMousePos(canvas, event, gl)
+        dragEvent(gl, event, objectList, program_info)
     }, false)
     canvas.addEventListener('click', (event) => {
-        clickEvent(gl, event, objectList, programInfo)
+        clickEvent(gl, event, objectList, program_info)
     }, false)
     canvas.addEventListener('mousedown', () => {
         isMouseDown = true
@@ -237,20 +236,20 @@ async function main() {
     document.addEventListener('keydown', (event) => {
         if (appState === AppState.Draw && drawingContext === ObjectType.Poly && event.key === 'Enter') {
             console.log("Enter pressed")
-            onKeyEnterEvent(gl, event, objectList, programInfo)
+            onKeyEnterEvent(gl, event, objectList, program_info)
         }
     })
 
     // render block
     var then = 0;
-    init(gl, programInfo, vertex_array_buffer)
+    init(gl, program_info, vertex_array_buffer)
     function render(now) {
         now *= 0.001
         const deltatime = now - then
         gl.clearColor(1,1,1,1)
         gl.clear(gl.COLOR_BUFFER_BIT)
         gl.viewport(0,0, gl.canvas.width, gl.canvas.height)
-        drawTex(gl, programInfo, objectList)
+        drawTexture(gl, program_info, objectList)
         const pixelX = mousePos[0] * gl.canvas.width / canvas.clientWidth
         const pixelY = gl.canvas.height - mousePos[1] * gl.canvas.height / canvas.clientHeight - 1
         const data = new Uint8Array(4)
@@ -268,16 +267,16 @@ async function main() {
         
         gl.bindFramebuffer(gl.FRAMEBUFFER, null)
         if (appState === AppState.Draw) {
-            recalcPosBuf(gl, programInfo, vertex_array_buffer, mousePosVertNormalized)
-            drawScene(gl, programInfo)
+            recalcPosBuf(gl, program_info, vertex_array_buffer, mousePosVertNormalized)
+            drawScene(gl, program_info)
         }
-        objectList.render(programInfo)
+        objectList.render(program_info)
         requestAnimationFrame(render)
     }
     requestAnimationFrame(render)
 }
 
-function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, programInfo: ProgramInfo) {
+function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, program_info: ProgramInfo) {
     if (appState === AppState.Draw) {
         const position = [
             event.pageX - event.target.offsetLeft,
@@ -295,7 +294,7 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
             }else if (drawingContext === ObjectType.Rect) {
                 //Rect disini
             } else if (drawingContext === ObjectType.Poly) {
-                const glObj = new GLObject(gl.TRIANGLES, programInfo.shader_program, gl, ObjectType.Poly)
+                const glObj = new GLObject(gl.TRIANGLES, program_info.shader_program, gl, ObjectType.Poly)
                 glObj.assignVertexArray([...vertex_array_buffer])
                 glObj.assignId(totalObj + 1)
                 glObj.bind()
@@ -314,14 +313,13 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
             if (!obj) return
             obj.setSelected(true)
             const [xPos, yPos] = obj.position
-            const [rot, xScale, yScale] = [obj.rotation, ...obj.scale]
+            const [xScale, yScale] = [...obj.scale]
             const color = ConvertRGBtoHex(obj.color[0], obj.color[1], obj.color[2])
             document.getElementById('selected-id').innerText = lastSelectedObjId.toString()
             document.getElementById('x-pos-val').innerText = xPos.toString()
             document.getElementById('y-pos-val').innerText = yPos.toString();
             (document.getElementById('x-pos-range') as HTMLInputElement).value = xPos.toString();
             (document.getElementById('y-pos-range') as HTMLInputElement).value = yPos.toString();
-            (document.getElementById('rot-input') as HTMLInputElement).value = rot.toString();
             (document.getElementById('x-scale-input') as HTMLInputElement).value = xScale.toString();
             (document.getElementById('y-scale-input') as HTMLInputElement).value = yScale.toString();
             (document.getElementById('col-picker') as HTMLInputElement).value = color;
@@ -333,10 +331,10 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
     }
 }
 
-function onKeyEnterEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, programInfo: ProgramInfo) {
+function onKeyEnterEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, program_info: ProgramInfo) {
     sisa_vertex = 0
     appState = AppState.Select
-    const glObj = new GLObject(gl.TRIANGLES, programInfo.shader_program, gl, ObjectType.Poly)
+    const glObj = new GLObject(gl.TRIANGLES, program_info.shader_program, gl, ObjectType.Poly)
     glObj.assignVertexArray([...vertex_array_buffer])
     glObj.assignId(totalObj + 1)
     glObj.bind()
@@ -365,7 +363,29 @@ function HexToColor(hex) {
         }
     } 
     return null;
-  }
+}
+
+function printMousePos(canvas: HTMLCanvasElement, event, gl: WebGL2RenderingContext) {
+    const position = [
+        event.pageX - event.target.offsetLeft,
+        gl.drawingBufferHeight - (event.pageY - event.target.offsetTop)
+    ]
+    const {x,y} = getMousePosition(canvas, event)
+    document.getElementById('x-pos').innerText = x.toString()
+    document.getElementById('y-pos').innerText = y.toString()
+    document.getElementById('object-id').innerText = mouseHoverObjId > 0 ? mouseHoverObjId.toString() : 'none'
+    document.getElementById('vertex-id').innerText = mouseHoverVertId != -1 ? mouseHoverVertId.toString() : 'none'
+    mousePos = [x,y]
+    mousePosVertNormalized = [position[0], position[1]]
+}
+
+function getMousePosition(canvas: HTMLCanvasElement, event) {
+    const bound = canvas.getBoundingClientRect()
+    return {
+        x: event.clientX - bound.left,
+        y: event.clientY - bound.top
+    }
+}
 
 main()
 

@@ -4,7 +4,6 @@ import { GLObjectData } from "../interface";
 class GLObject {
   public position: [number, number] = [0, 0];
   public anchor_point: [number, number];
-  public rotation: number;
   public scale: [number, number];
   public color: [number, number, number, number];
   public shader: WebGLProgram;
@@ -155,28 +154,53 @@ class GLObject {
   }
   
   bind() {
-    const gl = this.gl;
-    const vbo = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array(this.vertex_array),
-      gl.STATIC_DRAW
-    );
+    const gl = this.gl
+    const buf = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertex_array), gl.STATIC_DRAW)
+    this.vertex_array_buffer = buf
+    const indexBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer)
+    const indices = []
+    if (this.type != gl.LINES) {
+        for (let i = 2; i < this.vertex_array.length/2; i++) {
+            indices.push(i-1)
+            indices.push(i)
+            indices.push(0)
+        }
+    } else {
+        indices.push(0)
+        indices.push(1)
+    }
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW)
+    this.indices_length = indices.length
+
   }
 
-  draw() {
-    const gl = this.gl;
-    gl.useProgram(this.shader);
-    var vertexPos = gl.getAttribLocation(this.shader, "a_pos");
-    var uniformCol = gl.getUniformLocation(this.shader, "u_fragColor");
-    var uniformPos = gl.getUniformLocation(this.shader, "u_proj_mat");
-    gl.vertexAttribPointer(vertexPos, 2, gl.FLOAT, false, 0, 0);
-    gl.uniformMatrix3fv(uniformPos, false, this.projection_matrix);
-    gl.uniform4fv(uniformCol, [1.0, 0.0, 0.0, 1.0]);
-    gl.enableVertexAttribArray(vertexPos);
-    gl.drawArrays(gl.TRIANGLES, 0, this.vertex_array.length / 2);
+  draw(withProgram?: WebGLProgram) {
+    this.bind()
+    const program = withProgram || this.shader
+    const gl = this.gl
+    gl.useProgram(program)
+    const vertexPos = gl.getAttribLocation(program, 'attrib_vertexPos')
+    const uniformCol = gl.getUniformLocation(program, 'u_fragColor')
+    const uniformPos = gl.getUniformLocation(program, 'u_pos')
+    gl.uniformMatrix3fv(uniformPos, false, this.projection_matrix)
+    gl.vertexAttribPointer(
+        vertexPos,
+        2, // it's 2 dimensional    
+        gl.FLOAT,
+        false,
+        0,
+        0
+    )
+    gl.enableVertexAttribArray(vertexPos)
+    if (this.color) {
+      gl.uniform4fv(uniformCol, this.color)
+    }
+    gl.drawElements(this.type, this.indices_length, gl.UNSIGNED_SHORT, 0)
   }
+
   drawSelect(selectProgram: WebGLProgram) {
     this.bind()
     const gl = this.gl
@@ -205,9 +229,9 @@ class GLObject {
     gl.drawElements(this.type, this.indices_length, gl.UNSIGNED_SHORT, 0)
   }
 
-  drawPoint(vertPointProgram: WebGLProgram) {
+  drawPoint(vertex_point_program: WebGLProgram) {
     this.bind()
-    const program = vertPointProgram
+    const program = vertex_point_program
     const gl = this.gl
     gl.useProgram(program)
     const vertexPos = gl.getAttribLocation(program, 'a_Pos')

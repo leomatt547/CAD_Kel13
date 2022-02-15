@@ -17,8 +17,8 @@ export function download(data, filename, type) {
     }
 }
 
-export function recalcPosBuf(gl: WebGL2RenderingContext, programInfo, vab: Array<number>, mousePos: number[]) {
-    const intermediateBuf = [...vab, mousePos[0], mousePos[1]]
+export function recalcPosBuf(gl: WebGL2RenderingContext, programInfo, vertex_array_buffer: Array<number>, mousePos: number[]) {
+    const intermediateBuf = [...vertex_array_buffer, mousePos[0], mousePos[1]]
     const position_buffer = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(intermediateBuf), gl.STATIC_DRAW)
