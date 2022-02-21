@@ -1,0 +1,83 @@
+body {
+  margin: 0;
+  font-family: "Helvetica", sans-serif;
+}
+button {
+  cursor: pointer;
+  border: none;
+  outline-style: none;
+  text-transform: uppercase;
+}
+.flex {
+  display: flex;
+}
+canvas {
+  flex-basis: 80%;
+  height: 100vh;
+  border-left: 1px solid #13064e;
+}
+.sidebar {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-basis: 20%;
+}
+.menu-button {
+  width: 80%;
+  display: flex;
+  position: fixed;
+  top: 0;
+  right: 0;
+  justify-content: right;
+}
+.menu-button button {
+  flex-basis: 2;
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: #13064e;
+  color: white;
+  border-radius: 2px;
+}
+.menu-title {
+  font-weight: bold;
+  border-bottom: 1px solid #13064e;
+}
+.action {
+  width: 100%;
+  display: flex;
+  margin: 0 auto;
+}
+.action button {
+  background-color: #13064e;
+  border-radius: 2.5px;
+  padding: 10px;
+  margin: 10px;
+  color: white;
+  flex-grow: 1;
+}
+.position,
+.scale {
+  display: flex;
+  flex-direction: column;
+}
+.scale button,
+#help-button {
+  background-color: #13064e;
+  border-radius: 2.5px;
+  padding: 10px;
+  margin: 10px 0;
+  color: white;
+}
+#color-pallete {
+  width: 50%;
+  height: 10%;
+}
+.position label,
+.scale label {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+table {
+  font-size: 12px;
+}

@@ -35,7 +35,10 @@ function setupUI(gl_object_list: GLObjectList) {
     const y_position_input = document.getElementById('y-pos-range') as HTMLInputElement
     const select_button = document.getElementById('select-button') as HTMLInputElement
     const move_button = document.getElementById('move-button') as HTMLInputElement
-    const color_input = document.getElementById('col-picker') as HTMLInputElement
+    const color_input = document.getElementById('color-pallete') as HTMLInputElement
+    const scale_button = document.getElementById('scale-button') as HTMLInputElement
+    const x_scale_input = document.getElementById('x-scale-input') as HTMLInputElement
+    const y_scale_input = document.getElementById('y-scale-input') as HTMLInputElement
 
     draw_line_button.addEventListener('click', () => {
         draw_line()
@@ -93,6 +96,9 @@ function setupUI(gl_object_list: GLObjectList) {
     move_button.addEventListener('click', () => {
         appState = AppState.Move
     })
+    scale_button.addEventListener('click', () => {
+        appState = AppState.Scale
+    })
 
     x_position_input.addEventListener('input', () => {
         if (lastSelectedObjId > 0) {
@@ -122,6 +128,22 @@ function setupUI(gl_object_list: GLObjectList) {
             obj.setColor([color.r, color.g, color.b, 1]);
         }
     })
+
+    x_scale_input.addEventListener('change', () => {
+        if (lastSelectedObjId > 0) {
+            const obj = gl_object_list.getObject(lastSelectedObjId)
+            const [x,y] = [parseFloat(x_scale_input.value), parseFloat(y_scale_input.value)]
+            obj.setScale(x,y)
+        }
+    })
+    y_scale_input.addEventListener('change', () => {
+        if (lastSelectedObjId > 0) {
+            const obj = gl_object_list.getObject(lastSelectedObjId)
+            const [x,y] = [parseFloat(x_scale_input.value), parseFloat(y_scale_input.value)]
+            obj.setScale(x,y)
+        }
+    })
+
 }
 
 function draw_line(){
@@ -176,7 +198,8 @@ function drawScene(gl: WebGL2RenderingContext, program_info) {
     gl.vertexAttribPointer(vertexPos, 2, gl.FLOAT, false, 0, 0)
     gl.enableVertexAttribArray(vertexPos)    
     const uniformcCol = gl.getUniformLocation(shader_program, 'u_fragColor')
-    gl.uniform4f(uniformcCol, 0.5, 0.5, 0, 1)
+    //setting color fragment saat gambar garisnya
+    gl.uniform4f(uniformcCol, 0, 0.5, 1, 1)
     if (drawingContext === ObjectType.Poly) {
         //Menggambar garis setiap melewati vertex yang terbentuk
         gl.drawArrays(gl.LINE_STRIP, 0, vertex_array_buffer.length/2 + 1)
@@ -322,7 +345,7 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
             (document.getElementById('y-pos-range') as HTMLInputElement).value = yPos.toString();
             (document.getElementById('x-scale-input') as HTMLInputElement).value = xScale.toString();
             (document.getElementById('y-scale-input') as HTMLInputElement).value = yScale.toString();
-            (document.getElementById('col-picker') as HTMLInputElement).value = color;
+            (document.getElementById('color-pallete') as HTMLInputElement).value = color;
         } else {
             objectList.deselectAll()
             previouslySelectedObjId = -1
@@ -331,6 +354,7 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
     }
 }
 
+//Method untuk tombol enter ditekan
 function onKeyEnterEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, program_info: ProgramInfo) {
     sisa_vertex = 0
     appState = AppState.Select
@@ -340,7 +364,7 @@ function onKeyEnterEvent(gl: WebGL2RenderingContext, event, objectList: GLObject
     glObj.bind()
     objectList.addObject(glObj)
     totalObj++
-    console.log('poly created')
+    console.log('polygon berhasil dibuat')
     vertex_array_buffer.length = 0
 }
 
@@ -354,12 +378,17 @@ function ConvertRGBtoHex(red, green, blue) {
 }
 
 function HexToColor(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
+        hex.replace(/^#?([a-f\d])([a-f\d])([a-f\d])$/i, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+      })
+    );
+
     if(result){
         return {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
+            r: parseInt(result[1], 16)/256,
+            g: parseInt(result[2], 16)/256,
+            b: parseInt(result[3], 16)/256
         }
     } 
     return null;

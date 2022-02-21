@@ -25,6 +25,7 @@ class GLObjectList {
 
     renderTexture(program_info: ProgramInfo) {
         for (const obj of this.gl_object_list) {
+            //saat ada objek terpilih
             if (obj.is_selected) {
                 obj.drawPointSelect(program_info.vertex_select_program)
                 obj.drawSelect(program_info.select_program)
