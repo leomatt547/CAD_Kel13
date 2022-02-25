@@ -170,7 +170,11 @@ function dragEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, 
     const obj = objectList.getObject(lastSelectedObjId);
     if (!obj) return;
     if (lastSelectedVertId > 0 && mouseHoverVertId > 0) {
-      obj.moveVertex(lastSelectedVertId - 1, position[0], position[1]);
+      if(obj.object_type == ObjectType.Rect || obj.object_type == ObjectType.Square){
+        obj.moveVertexSegiEmpat(lastSelectedVertId - 1, position[0], position[1]);
+      }else{
+        obj.moveVertex(lastSelectedVertId - 1, position[0], position[1]);
+      }
     } else {
       obj.setPosition(position[0], position[1]);
     }
