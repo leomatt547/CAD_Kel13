@@ -178,6 +178,8 @@ function dragEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, 
     } else {
       obj.setPosition(position[0], position[1]);
     }
+  }else{
+    appState === AppState.Select
   }
 }
 
@@ -259,10 +261,10 @@ async function main() {
   canvas.addEventListener("mouseup", () => {
     isMouseDown = false;
   });
-  document.addEventListener("keydown", (event) => {
-    if (appState === AppState.Draw && drawingContext === ObjectType.Poly && event.key === "Enter") {
-      console.log("Enter pressed");
-      onKeyEnterEvent(gl, event, objectList, program_info);
+  document.addEventListener("dblclick", (event) => {
+    if (appState === AppState.Draw && drawingContext === ObjectType.Poly) {
+      console.log("Double Click pressed");
+      onDoubleClickEvent(gl, event, objectList, program_info);
     }
   });
 
@@ -355,7 +357,13 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
       (document.getElementById("x-scale-input") as HTMLInputElement).value = xScale.toString();
       (document.getElementById("y-scale-input") as HTMLInputElement).value = yScale.toString();
       (document.getElementById("color-pallete") as HTMLInputElement).value = color;
-    } else {
+    } else if (lastSelectedObjId == previouslySelectedObjId){
+      objectList.getObject(previouslySelectedObjId)?.deselect();
+      previouslySelectedObjId = -1;
+      lastSelectedObjId = -1;
+      document.getElementById("selected-id").innerText = "none";
+    }
+    else {
       objectList.deselectAll();
       previouslySelectedObjId = -1;
       document.getElementById("selected-id").innerText = "none";
@@ -364,17 +372,19 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
 }
 
 //Method untuk tombol enter ditekan
-function onKeyEnterEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, program_info: ProgramInfo) {
-  sisa_vertex = 0;
-  appState = AppState.Select;
-  const glObj = new GLObject(gl.TRIANGLES, program_info.shader_program, gl, ObjectType.Poly);
-  glObj.assignVertexArray([...vertex_array_buffer]);
-  glObj.assignId(totalObj + 1);
-  glObj.bind();
-  objectList.addObject(glObj);
-  totalObj++;
-  console.log("polygon berhasil dibuat");
-  vertex_array_buffer.length = 0;
+function onDoubleClickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, program_info: ProgramInfo) {
+  if (appState === AppState.Draw){
+    sisa_vertex = 0;
+    appState = AppState.Select;
+    const glObj = new GLObject(gl.TRIANGLES, program_info.shader_program, gl, ObjectType.Poly);
+    glObj.assignVertexArray([...vertex_array_buffer]);
+    glObj.assignId(totalObj + 1);
+    glObj.bind();
+    objectList.addObject(glObj);
+    totalObj++;
+    console.log("polygon berhasil dibuat");
+    vertex_array_buffer.length = 0;
+  }
 }
 
 function ColorToHex(color) {
