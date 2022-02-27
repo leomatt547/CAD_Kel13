@@ -124,7 +124,40 @@ class GLObject {
       return index
     }
   }
-  moveVertexSegiEmpat(index: number, x: number, y: number) {
+
+  moveVertexSquare(index: number, x: number, y: number) {
+    //edit vertex yg digeser
+    this.vertex_array[index*2] = x - this.position[0]
+    this.vertex_array[index*2+1] = y - this.position[1]
+    if(index == 1 || index == 3){
+      //edit vertex sebelumnya
+      this.vertex_array[(this.indexswitcher(index-1, 4))*2] = x - this.position[0]
+      //this.vertex_array[(this.indexswitcher(index-1, 4))*2+1] = y - this.position[1]
+      //edit vertex setelahnya
+      //this.vertex_array[(this.indexswitcher(index+1, 4))*2] = x - this.position[0]
+      this.vertex_array[(this.indexswitcher(index+1, 4))*2+1] = y - this.position[1]
+    }else{
+      //edit vertex sebelumnya
+      //this.vertex_array[(this.indexswitcher(index-1, 4))*2] = x - this.position[0]
+      this.vertex_array[(this.indexswitcher(index-1, 4))*2+1] = y - this.position[1]
+      //edit vertex setelahnya
+      this.vertex_array[(this.indexswitcher(index+1, 4))*2] = x - this.position[0]
+      //this.vertex_array[(this.indexswitcher(index+1, 4))*2+1] = y - this.position[1]
+    }
+    this.setAnchorPoint()
+    const [centerX, centerY] = this.anchor_point
+    const transformedVertexArray = [...this.vertex_array]
+    for (let i = 0; i < transformedVertexArray.length; i += 2) {
+        transformedVertexArray[i] -= centerX
+        transformedVertexArray[i+1] -= centerY
+    }
+    this.vertex_array = transformedVertexArray
+    this.position[0] += this.anchor_point[0]
+    this.position[1] += this.anchor_point[1]
+    this.projection_matrix = this.calcProjectionMatrix()
+  }
+
+  moveVertexRectangle(index: number, x: number, y: number) {
     //edit vertex yg digeser
     this.vertex_array[index*2] = x - this.position[0]
     this.vertex_array[index*2+1] = y - this.position[1]

@@ -33,8 +33,8 @@ function setupUI(gl_object_list: GLObjectList) {
   const save_button = document.getElementById("save-button") as HTMLButtonElement;
   const x_position_input = document.getElementById("x-pos-range") as HTMLInputElement;
   const y_position_input = document.getElementById("y-pos-range") as HTMLInputElement;
-  // const select_button = document.getElementById("select-button") as HTMLInputElement;
-  // const move_button = document.getElementById("move-button") as HTMLInputElement;
+  const select_button = document.getElementById("select-button") as HTMLInputElement;
+  const move_button = document.getElementById("move-button") as HTMLInputElement;
   const color_input = document.getElementById("color-pallete") as HTMLInputElement;
   const scale_button = document.getElementById("scale-button") as HTMLInputElement;
   const x_scale_input = document.getElementById("x-scale-input") as HTMLInputElement;
@@ -89,12 +89,12 @@ function setupUI(gl_object_list: GLObjectList) {
     download(JSON.stringify(fileContent), "CADKel13-data.json", "application/json");
   });
 
-  // select_button.addEventListener("click", () => {
-  //   appState = AppState.Select;
-  // });
-  // move_button.addEventListener("click", () => {
-  //   appState = AppState.Move;
-  // });
+  select_button.addEventListener("click", () => {
+    appState = AppState.Select;
+  });
+  move_button.addEventListener("click", () => {
+    appState = AppState.Move;
+  });
   scale_button.addEventListener("click", () => {
     appState = AppState.Scale;
   });
@@ -132,14 +132,26 @@ function setupUI(gl_object_list: GLObjectList) {
     if (lastSelectedObjId > 0) {
       const obj = gl_object_list.getObject(lastSelectedObjId);
       const [x, y] = [parseFloat(x_scale_input.value), parseFloat(y_scale_input.value)];
-      obj.setScale(x, y);
+      if(obj.object_type === ObjectType.Square){
+        document.getElementById("x-scale-input").innerText = x.toString();
+        document.getElementById("y-scale-input").innerHTML = x.toString();
+        obj.setScale(x, x);
+      }else{
+        obj.setScale(x, y);
+      }
     }
   });
   y_scale_input.addEventListener("change", () => {
     if (lastSelectedObjId > 0) {
       const obj = gl_object_list.getObject(lastSelectedObjId);
       const [x, y] = [parseFloat(x_scale_input.value), parseFloat(y_scale_input.value)];
-      obj.setScale(x, y);
+      if(obj.object_type === ObjectType.Square){
+        document.getElementById("x-scale-input").innerHTML = y.toString();
+        document.getElementById("y-scale-input").innerHTML = y.toString();
+        obj.setScale(y, y);
+      }else{
+        obj.setScale(x, y);
+      }
     }
   });
 }
@@ -176,8 +188,11 @@ function dragEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, 
     const obj = objectList.getObject(lastSelectedObjId);
     if (!obj) return;
     if (lastSelectedVertId > 0 && mouseHoverVertId > 0) {
-      if(obj.object_type == ObjectType.Rect || obj.object_type == ObjectType.Square){
-        obj.moveVertexSegiEmpat(lastSelectedVertId - 1, position[0], position[1]);
+      if(obj.object_type == ObjectType.Square){
+        //obj.moveVertexSquare(lastSelectedVertId - 1, position[0], position[1]);
+      }
+      else if(obj.object_type == ObjectType.Rect){
+        obj.moveVertexRectangle(lastSelectedVertId - 1, position[0], position[1]);
       }else{
         obj.moveVertex(lastSelectedVertId - 1, position[0], position[1]);
       }
