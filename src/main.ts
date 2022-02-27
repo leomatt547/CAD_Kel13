@@ -146,10 +146,16 @@ function setupUI(gl_object_list: GLObjectList) {
 
 function draw_line() {
   //Kode gambar line
+  appState = AppState.Draw;
+  drawingContext = ObjectType.Line
+  sisa_vertex = 2;
 }
 
 function draw_square() {
   //Kode gambar square
+  appState = AppState.Draw;
+  drawingContext = ObjectType.Rect
+  sisa_vertex = 2;
 }
 
 function draw_rectangle() {
@@ -308,8 +314,26 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
       appState = AppState.Select;
       if (drawingContext === ObjectType.Line) {
         //Line disini
+        const glObj = new GLObject(gl.LINES, program_info.shader_program, gl, ObjectType.Rect);
+        glObj.assignVertexArray([...vertex_array_buffer]);
+        glObj.assignId(totalObj + 1)
+        glObj.bind()
+        objectList.addObject(glObj);
+        totalObj++
       } else if (drawingContext === ObjectType.Square) {
         //Square disini
+        const glObj = new GLObject(gl.TRIANGLES, program_info.shader_program, gl, ObjectType.Square)
+        const localVertexArray = [
+          vertex_array_buffer[0], vertex_array_buffer[1],
+          vertex_array_buffer[2], vertex_array_buffer[3],
+          vertex_array_buffer[4], vertex_array_buffer[5],
+          vertex_array_buffer[6], vertex_array_buffer[7]
+        ]
+        glObj.assignVertexArray(localVertexArray);
+        glObj.assignId(totalObj + 1)
+        glObj.bind()
+        objectList.addObject(glObj);
+        totalObj++
       } else if (drawingContext === ObjectType.Rect) {
         //Rect disini
         const glObj = new GLObject(gl.TRIANGLES, program_info.shader_program, gl, ObjectType.Rect);
