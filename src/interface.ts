@@ -1,5 +1,6 @@
 export interface ProgramInfo {
   shader_program?: WebGLProgram;
+  shader_square_program?: WebGLProgram;
   select_program?: WebGLProgram;
   vertex_point_program?: WebGLProgram;
   vertex_select_program?: WebGLProgram;

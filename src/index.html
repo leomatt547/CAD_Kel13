@@ -85,7 +85,93 @@
       <button id="draw-rectangle">RECTANGLE</button>
       <button id="draw-polygon">POLYGON</button>
     </div>
-    <canvas id="content"></canvas>
+    <!-- Button trigger modal -->
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-toggle="modal"
+      data-target="#exampleModalLong"
+    >
+      Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModalLong"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="exampleModalLongTitle"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">...</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h4>Langkah-Langkah menggambar Garis dan Persegi Panjang:</h4>
+        <ol>
+          <li>Klik tombol LINE</li>
+          <li>Klik titik pertama di sembarang tempat</li>
+          <li>Klik titik kedua di tempat yang diinginkan</li>
+          <li>Garis/Persegi Panjang tergambar di layar</li>
+        </ol>
+        <h4>Langkah-Langkah menggambar polygon:</h4>
+        <ol>
+          <li>Klik tombol POLYGON</li>
+          <li>Klik titik pertama di sembarang tempat</li>
+          <li>Klik titik lainnya di tempat yang diinginkan</li>
+          <li>Apabila sudah selesai, klik dua kali pada titik terakhir</li>
+          <li>Polygon tergam bar di layar</li>
+        </ol>
+        <h4>Langkah-Langkah memindahkan objek:</h4>
+        <ol>
+          <li>Pilih Objek yang diinginkan</li>
+          <li>Dengan menggunakan mouse, geser ke tempat yang diinginkan</li>
+          <li>Lepaskan Drag pada mouse, object sudah berpindah</li>
+        </ol>
+        <h4>Langkah-Langkah resize objek:</h4>
+        <ol>
+          <li>Pilih Objek yang diinginkan</li>
+          <li>Ketikkan Angka pada layar scale di sebelah kiri, tekan scale</li>
+          <li>Langkah lainnya yaitu menarik garis dari titik sudut objek</li>
+          <li>Objek sudah berubah ukuran</li>
+        </ol>
+        <h4>Langkah-Langkah mengubah warna objek:</h4>
+        <ol>
+          <li>Pilih Objek yang diinginkan</li>
+          <li>Klik color pallete pada layar kiri</li>
+          <li>Pilih warna yang diingikan</li>
+          <li>Objek sudah berubah warna</li>
+        </ol>
+      </div>
+    </div>
     <script src="main.js" type="module"></script>
   </body>
 </html>

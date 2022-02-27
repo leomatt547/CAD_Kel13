@@ -154,7 +154,7 @@ function draw_line() {
 function draw_square() {
   //Kode gambar square
   appState = AppState.Draw;
-  drawingContext = ObjectType.Rect
+  drawingContext = ObjectType.Square
   sisa_vertex = 2;
 }
 
@@ -190,26 +190,58 @@ function dragEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, 
 }
 
 function drawScene(gl: WebGL2RenderingContext, program_info) {
-  const shader_program = program_info.shader_program;
-  gl.useProgram(shader_program);
-  gl.bindBuffer(gl.ARRAY_BUFFER, program_info.buffers.position_buffer);
-  const vertexPos = gl.getAttribLocation(shader_program, "attrib_vertexPos");
-  const resolutionPos = gl.getUniformLocation(shader_program, "u_resolution");
-  const uniformPos = gl.getUniformLocation(shader_program, "u_pos");
-  const identityMatrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-  gl.uniform2f(resolutionPos, gl.canvas.width, gl.canvas.height);
-  gl.uniformMatrix3fv(uniformPos, false, identityMatrix);
-  gl.vertexAttribPointer(vertexPos, 2, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(vertexPos);
-  const uniformcCol = gl.getUniformLocation(shader_program, "u_fragColor");
-  //setting color fragment saat gambar garisnya
-  gl.uniform4f(uniformcCol, 0, 0.5, 1, 1);
-  if (drawingContext === ObjectType.Poly) {
-    //Menggambar garis setiap melewati vertex yang terbentuk
-    gl.drawArrays(gl.LINE_STRIP, 0, vertex_array_buffer.length / 2 + 1);
-  } else {
-    gl.drawArrays(gl.LINES, 0, vertex_array_buffer.length / 2 + 1);
-  }
+  // if(drawingContext === ObjectType.Square){
+  //   // const shader_square_program = program_info.shader_square_program;
+  //   // gl.useProgram(shader_square_program);
+  //   // gl.bindBuffer(gl.ARRAY_BUFFER, program_info.buffers.position_buffer);
+  //   // console.log("Masuk sini");
+  //   // const vertexPos = gl.getAttribLocation(shader_square_program, "aVertexPosition");
+  //   // const pMatrixUniform = gl.getUniformLocation(shader_square_program, "uPMatrix");
+  //   // const mvMatrixUniform = gl.getUniformLocation(shader_square_program, "uMVMatrix");
+  //   // const identityMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+  //   // //gl.uniform2f(resolutionPos, gl.canvas.width, gl.canvas.height);
+  //   // // gl.uniformMatrix3fv(uniformPos, false, identityMatrix);
+  //   // gl.uniformMatrix4fv(pMatrixUniform, false, identityMatrix);
+  //   // gl.uniformMatrix4fv(mvMatrixUniform, false, identityMatrix);
+  //   // gl.vertexAttribPointer(vertexPos, 2, gl.FLOAT, false, 0, 0);
+  //   // gl.enableVertexAttribArray(vertexPos);
+  //   const shader_program = program_info.shader_program;
+  //   gl.useProgram(shader_program);
+  //   gl.bindBuffer(gl.ARRAY_BUFFER, program_info.buffers.position_buffer);
+  //   const vertexPos = gl.getAttribLocation(shader_program, "attrib_vertexPos");
+  //   const resolutionPos = gl.getUniformLocation(shader_program, "u_resolution");
+  //   const uniformPos = gl.getUniformLocation(shader_program, "u_pos");
+  //   const identityMatrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+  //   gl.uniform2f(resolutionPos, gl.canvas.width, gl.canvas.height);
+  //   gl.uniformMatrix3fv(uniformPos, false, identityMatrix);
+  //   gl.vertexAttribPointer(vertexPos, 2, gl.FLOAT, false, 0, 0);
+  //   gl.enableVertexAttribArray(vertexPos);
+  //   const uniformcCol = gl.getUniformLocation(shader_program, "u_fragColor");
+  //   gl.uniform4f(uniformcCol, 0, 0.5, 1, 1);
+  //   gl.drawArrays(gl.LINES, 0, vertex_array_buffer.length / 2 + 1);
+  // }else{
+    const shader_program = program_info.shader_program;
+    gl.useProgram(shader_program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, program_info.buffers.position_buffer);
+    const vertexPos = gl.getAttribLocation(shader_program, "attrib_vertexPos");
+    const resolutionPos = gl.getUniformLocation(shader_program, "u_resolution");
+    const uniformPos = gl.getUniformLocation(shader_program, "u_pos");
+    const identityMatrix = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+    gl.uniform2f(resolutionPos, gl.canvas.width, gl.canvas.height);
+    gl.uniformMatrix3fv(uniformPos, false, identityMatrix);
+    gl.vertexAttribPointer(vertexPos, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vertexPos);
+    const uniformcCol = gl.getUniformLocation(shader_program, "u_fragColor");
+    //setting color fragment saat gambar garisnya
+    gl.uniform4f(uniformcCol, 0, 0.5, 1, 1);
+    if (drawingContext === ObjectType.Poly) {
+      //Menggambar garis setiap melewati vertex yang terbentuk
+      gl.drawArrays(gl.LINE_STRIP, 0, vertex_array_buffer.length / 2 + 1);
+    } else {
+      gl.drawArrays(gl.LINES, 0, vertex_array_buffer.length / 2 + 1);
+      //gl.drawArrays(gl.TRIANGLES, 0, vertex_array_buffer.length / 2 + 1);
+    }
+  // }
 }
 
 function drawTexture(gl: WebGL2RenderingContext, program_info: ProgramInfo, objList: GLObjectList) {
@@ -235,6 +267,7 @@ async function main() {
   }
 
   program_info.shader_program = await initShaderFiles(gl, "draw_vertex.glsl", "draw_fragment.glsl");
+  program_info.shader_square_program = await initShaderFiles(gl, "draw_square_vertex.glsl", "draw_square_fragment.glsl");
   program_info.select_program = await initShaderFiles(gl, "select_vertex.glsl", "select_fragment.glsl");
   program_info.vertex_point_program = await initShaderFiles(gl, "point_vertex.glsl", "point_fragment.glsl");
   program_info.vertex_select_program = await initShaderFiles(gl, "point_vertex.glsl", "selectPoint_fragment.glsl");
@@ -329,12 +362,15 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
       } else if (drawingContext === ObjectType.Square) {
         //Square disini
         const glObj = new GLObject(gl.TRIANGLES, program_info.shader_program, gl, ObjectType.Square)
-        const localVertexArray = [
-          vertex_array_buffer[0], vertex_array_buffer[1],
-          vertex_array_buffer[2], vertex_array_buffer[3],
-          vertex_array_buffer[4], vertex_array_buffer[5],
-          vertex_array_buffer[6], vertex_array_buffer[7]
-        ]
+        const deltaX = vertex_array_buffer[2] - vertex_array_buffer[0];
+        const deltaY = vertex_array_buffer[3] - vertex_array_buffer[1];
+        const delta = (deltaX > deltaY)? deltaX : deltaY;
+        const localVertexArray =
+        [vertex_array_buffer[0], vertex_array_buffer[1], 
+        vertex_array_buffer[0] + delta, vertex_array_buffer[1], 
+        vertex_array_buffer[0] + delta, vertex_array_buffer[1] + delta,
+        vertex_array_buffer[0], vertex_array_buffer[1] + delta
+        ];
         glObj.assignVertexArray(localVertexArray);
         glObj.assignId(totalObj + 1)
         glObj.bind()
@@ -454,6 +490,32 @@ function getMousePosition(canvas: HTMLCanvasElement, event) {
     x: event.clientX - bound.left,
     y: event.clientY - bound.top,
   };
+}
+
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("help-button");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0] as HTMLElement;
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
 }
 
 main();
