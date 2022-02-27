@@ -33,8 +33,8 @@ function setupUI(gl_object_list: GLObjectList) {
   const save_button = document.getElementById("save-button") as HTMLButtonElement;
   const x_position_input = document.getElementById("x-pos-range") as HTMLInputElement;
   const y_position_input = document.getElementById("y-pos-range") as HTMLInputElement;
-  const select_button = document.getElementById("select-button") as HTMLInputElement;
-  const move_button = document.getElementById("move-button") as HTMLInputElement;
+  // const select_button = document.getElementById("select-button") as HTMLInputElement;
+  // const move_button = document.getElementById("move-button") as HTMLInputElement;
   const color_input = document.getElementById("color-pallete") as HTMLInputElement;
   const scale_button = document.getElementById("scale-button") as HTMLInputElement;
   const x_scale_input = document.getElementById("x-scale-input") as HTMLInputElement;
@@ -89,12 +89,12 @@ function setupUI(gl_object_list: GLObjectList) {
     download(JSON.stringify(fileContent), "CADKel13-data.json", "application/json");
   });
 
-  select_button.addEventListener("click", () => {
-    appState = AppState.Select;
-  });
-  move_button.addEventListener("click", () => {
-    appState = AppState.Move;
-  });
+  // select_button.addEventListener("click", () => {
+  //   appState = AppState.Select;
+  // });
+  // move_button.addEventListener("click", () => {
+  //   appState = AppState.Move;
+  // });
   scale_button.addEventListener("click", () => {
     appState = AppState.Scale;
   });
@@ -171,7 +171,7 @@ function draw_polygon() {
 }
 
 function dragEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, program_info: ProgramInfo) {
-  if (appState === AppState.Move && isMouseDown) {
+  if (isMouseDown) {
     const position = [event.pageX - event.target.offsetLeft, gl.drawingBufferHeight - (event.pageY - event.target.offsetTop)];
     const obj = objectList.getObject(lastSelectedObjId);
     if (!obj) return;
@@ -259,10 +259,10 @@ async function main() {
   );
   canvas.addEventListener("mousedown", () => {
     isMouseDown = true;
-    if (appState === AppState.Move) {
+    // if (appState === AppState.Move) {
       if (mouseHoverVertId > 0) lastSelectedVertId = mouseHoverVertId;
       document.getElementById("vertex-selected-id").innerText = lastSelectedVertId.toString();
-    }
+    // }
   });
   canvas.addEventListener("mouseup", () => {
     isMouseDown = false;
