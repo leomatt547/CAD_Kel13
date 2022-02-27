@@ -320,7 +320,7 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
       appState = AppState.Select;
       if (drawingContext === ObjectType.Line) {
         //Line disini
-        const glObj = new GLObject(gl.LINES, program_info.shader_program, gl, ObjectType.Rect);
+        const glObj = new GLObject(gl.LINES, program_info.shader_program, gl, ObjectType.Line);
         glObj.assignVertexArray([...vertex_array_buffer]);
         glObj.assignId(totalObj + 1)
         glObj.bind()
