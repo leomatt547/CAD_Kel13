@@ -267,7 +267,6 @@ async function main() {
   }
 
   program_info.shader_program = await initShaderFiles(gl, "draw_vertex.glsl", "draw_fragment.glsl");
-  program_info.shader_square_program = await initShaderFiles(gl, "draw_square_vertex.glsl", "draw_square_fragment.glsl");
   program_info.select_program = await initShaderFiles(gl, "select_vertex.glsl", "select_fragment.glsl");
   program_info.vertex_point_program = await initShaderFiles(gl, "point_vertex.glsl", "point_fragment.glsl");
   program_info.vertex_select_program = await initShaderFiles(gl, "point_vertex.glsl", "selectPoint_fragment.glsl");
