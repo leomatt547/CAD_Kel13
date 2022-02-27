@@ -342,6 +342,9 @@ async function main() {
   requestAnimationFrame(render);
 }
 
+function sign(x: number){
+  return (x<0)?(-1):1;
+}
 function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList, program_info: ProgramInfo) {
   if (appState === AppState.Draw) {
     const position = [event.pageX - event.target.offsetLeft, gl.drawingBufferHeight - (event.pageY - event.target.offsetTop)];
@@ -361,14 +364,16 @@ function clickEvent(gl: WebGL2RenderingContext, event, objectList: GLObjectList,
       } else if (drawingContext === ObjectType.Square) {
         //Square disini
         const glObj = new GLObject(gl.TRIANGLES, program_info.shader_program, gl, ObjectType.Square)
-        const deltaX = vertex_array_buffer[2] - vertex_array_buffer[0];
-        const deltaY = vertex_array_buffer[3] - vertex_array_buffer[1];
-        const delta = (deltaX > deltaY)? deltaX : deltaY;
+        var deltaX = vertex_array_buffer[2] - vertex_array_buffer[0];
+        var deltaY = vertex_array_buffer[3] - vertex_array_buffer[1];
+        var delta = (Math.abs(deltaX) > Math.abs(deltaY))? Math.abs(deltaX) :  Math.abs(deltaY);
+        deltaX = sign(deltaX) * delta;
+        deltaY = sign(deltaY) * delta;
         const localVertexArray =
         [vertex_array_buffer[0], vertex_array_buffer[1], 
-        vertex_array_buffer[0] + delta, vertex_array_buffer[1], 
-        vertex_array_buffer[0] + delta, vertex_array_buffer[1] + delta,
-        vertex_array_buffer[0], vertex_array_buffer[1] + delta
+        vertex_array_buffer[0], vertex_array_buffer[1] + deltaY,
+        vertex_array_buffer[0] + deltaX, vertex_array_buffer[1] + deltaY,
+        vertex_array_buffer[0] + deltaX, vertex_array_buffer[1]
         ];
         glObj.assignVertexArray(localVertexArray);
         glObj.assignId(totalObj + 1)
