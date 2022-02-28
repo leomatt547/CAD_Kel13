@@ -103,7 +103,7 @@ table {
 
 @media (min-height: 500px) {
   .modal {
-    height: 800px;
+    height: 500px;
   }
 }
 
