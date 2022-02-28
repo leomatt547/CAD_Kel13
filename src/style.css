@@ -86,7 +86,7 @@ table {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
+  padding-top: 25px; /* Location of the box */
   left: 0;
   top: 0;
   width: 100%; /* Full width */
@@ -103,13 +103,13 @@ table {
 
 @media (min-height: 500px) {
   .modal {
-    height: 400px;
+    height: 800px;
   }
 }
 
 @media (min-height: 800px) {
   .modal {
-    height: 600px;
+    height: 800px;
   }
 }
 
