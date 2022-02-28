@@ -1,7 +1,17 @@
 # CAD_Kel13
 
 Tubes Grafkom Kelompok 13
+
 <img src="Tampilan_CAD.png"/>
+
+## Author
+
+- M. Ibnu Syah Hafizh (13519177)
+- Rayhan Asadel (13519196)
+- Leonard Matheus (13519215)
+
+## Cara penggunaan
+
 Untuk mempermudah penggunaan program kami menggunakan Yarn sebagai package manager, untuk menginstall Yarn diperlukan Node.js, dan dengan menggunakan command:
 
 `npm install --global yarn`
